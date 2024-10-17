@@ -1,8 +1,8 @@
 from textnode import *
+from copytodirectory import copy_to_directory
 
 def main():
-    test_node = TextNode("this is a test", TextType.BOLD, "https://boot.dev")
-    print(test_node)
+    copy_to_directory('static/', 'public/')
 
 if __name__ == '__main__':
     main() 
