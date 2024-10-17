@@ -14,19 +14,13 @@ def markdown_to_html_node(markdown):
         match (block_type):
             case 'quote':
                 block_unquoted = "".join(list(map(str.lstrip, block.split('>'))))
-                paragraph_children = []
-                paragraph_children.append(ParentNode("p", text_to_children(block_unquoted)))
-                node_children.append(ParentNode("blockquote", paragraph_children))
+                node_children.append(ParentNode("blockquote", text_to_children(block_unquoted)))
             case 'unordered_list':
-                block_unlined = ""
-                if block[0] == '*':
-                    block_unlined = "".join(list(map(str.lstrip, block.split('*'))))
-                elif block[0] == '-':
-                    block_unlined = "".join(list(map(str.lstrip, block.split('-'))))
                 line_children = []
-                split_block = block_unlined.split("\n")
+                split_block = block.split("\n")
                 for item in split_block:
-                    line_children.append(ParentNode("li", text_to_children(item)))
+                    if len(item) > 2:
+                        line_children.append(ParentNode("li", text_to_children(item[2:])))
                 node_children.append(ParentNode("ul", line_children))
             case 'ordered_list':
                 line_children = []
@@ -39,8 +33,12 @@ def markdown_to_html_node(markdown):
                 pre_children = []
                 split_block = block.split("\n")
                 for item in split_block:
-                    n_item = item[3:len(item)-3]
-                    pre_children.append(ParentNode("code", text_to_children(n_item)))
+                    n_item = item.strip('```')
+                    if n_item != '':
+                        if len(pre_children) == 0:
+                            pre_children.append(ParentNode("code", text_to_children(n_item)))
+                        else:
+                            pre_children.append(ParentNode("code", text_to_children('\n'+n_item)))
                 node_children.append(ParentNode("pre", pre_children))
             case 'heading':
                 header = block.split(" ")[0]
